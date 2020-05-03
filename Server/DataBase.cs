@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
@@ -56,18 +55,18 @@ namespace Server {
          */
         public static List<Message> GetMedidas(int uid) {
             MySqlConnection sqlConnection = new MySqlConnection(_CONNECTION);
-                sqlConnection.Open();
-                
-                using var cmd = new MySqlCommand(_GET_MEDIDAS_UID, sqlConnection);
-                cmd.Parameters.AddWithValue(_P_UID, uid);
-                using MySqlDataReader dataReader = cmd.ExecuteReader();
-                
-                var list = new List<Message>();
-                while(dataReader.Read()) list.Add(
-                    new Message(dataReader.GetDateTime(_DATA).ToString(), 
-                        dataReader.GetFloat(_TEMP), -1)
-                    );
-                return list;
+            sqlConnection.Open();
+            
+            using var cmd = new MySqlCommand(_GET_MEDIDAS_UID, sqlConnection);
+            cmd.Parameters.AddWithValue(_P_UID, uid);
+            using MySqlDataReader dataReader = cmd.ExecuteReader();
+            
+            var list = new List<Message>();
+            while(dataReader.Read()) list.Add(
+                new Message(dataReader.GetDateTime(_DATA).ToString(), 
+                    dataReader.GetFloat(_TEMP), uid)
+                );
+            return list;
         }
     }
 }
