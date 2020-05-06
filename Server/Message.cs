@@ -29,7 +29,7 @@ namespace Server {
 			=> "Date: " + this.date + ", Temp: " + this.temp + ", UID: " + this.uid;
 
 		public string ToJson() 
-			=> JsonConvert.SerializeObject(this, Formatting.Indented);
+			=> JsonConvert.SerializeObject(this, Formatting.None);
 
 		public DateTime? GetDate() {
 			try {
