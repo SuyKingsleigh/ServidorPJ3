@@ -2,6 +2,7 @@ const http = require('http');
 
 const _host = "127.0.0.1";
 const _port = 42069;
+// const _data = '{"4/2020", "temp" : 32, "uid" : 1}'; // com erro
 const _data = '{"date" : "21:39:45 5/4/2020", "temp" : 32, "uid" : 1}';
 
 const getOptions = {

@@ -1,11 +1,11 @@
 #nullable enable
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Server {
     class HTTPServer {
@@ -26,8 +26,13 @@ namespace Server {
         private void HandlePost(HttpListenerContext context) {
             string body = new StreamReader(context.Request.InputStream).ReadToEnd();
             Console.WriteLine("[POST] Recebeu: " + body);
-            DataBase.AddMessage(Message.ToMessage(body));
-            SendResponse(context.Response, "ACK");
+            try {
+                DataBase.AddMessage(Message.ToMessage(body));
+                SendResponse(context.Response, "ACK");
+            }
+            catch(Exception e) {
+                SendResponse(context.Response, "NACK", 400);
+            }
         }
 
         /**
@@ -54,9 +59,9 @@ namespace Server {
             this.SendResponse(context.Response, resp);
         }
 
-        private void SendResponse(HttpListenerResponse response, string? resp) {
+        private void SendResponse(HttpListenerResponse response, string? resp, int status=200) {
             var buffer = System.Text.Encoding.UTF8.GetBytes(resp ?? "UID deve ser int");
-            
+            response.StatusCode = status;
             response.ContentLength64 = buffer.Length;   // Define o tamanho da mensagem 
             System.IO.Stream output = response.OutputStream; // Abre um stream de saia 
             output.Write(buffer,0,buffer.Length);  
@@ -77,7 +82,5 @@ namespace Server {
                 Console.WriteLine(e);
             }
         }
-        
-        
     }
 }
