@@ -6,17 +6,26 @@ using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Server {
     class HTTPServer {
-        private static string _host = "http://127.0.0.1:42069/";
-
+        private static string _host0 = "http://127.0.0.1:42069/";
+        private static string _host1 = "http://localhost:42069/";
+        private int i = 0;
         public HTTPServer() {
             var httpListener = new HttpListener();
-            httpListener.Prefixes.Add(_host);
+            httpListener.Prefixes.Add(_host0);
+            httpListener.Prefixes.Add(_host1);
             httpListener.Start();
 
-            while(httpListener.IsListening) ProccessRequest(httpListener.GetContext());
+            while(httpListener.IsListening) {
+                var thread = new Thread(ProccessRequest);
+                thread.Name = (++i).ToString();
+                thread.Start(httpListener.GetContext());
+                
+                Console.WriteLine($"Iniciou a Thread:  {thread.Name}");
+            }
             httpListener.Close();
         }
 
@@ -68,10 +77,14 @@ namespace Server {
             output.Close();
         }
 
-        private void ProccessRequest(HttpListenerContext context) {
+        private void ProccessRequest(object? o) {
+            var context = (HttpListenerContext) o;
             Console.WriteLine("Recebeu um request: " + context.Request.HttpMethod);
             if(context.Request.HttpMethod == HttpMethod.Get.Method) this.HandleGet(context);
             else if(context.Request.HttpMethod == HttpMethod.Post.Method) this.HandlePost(context);
+            
+            Console.WriteLine($"Terminou a thread {Thread.CurrentThread.Name}");
+            i--;
         }
         
         public static void Main(string[] args) {
