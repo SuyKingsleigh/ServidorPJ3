@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 namespace Server {
-    public class DataBase {
+    public class MedidasDB {
         private static string _CONNECTION = @"Database=ControleSementes; Data Source=localhost; User Id=root; Password=123";
         private static string _INSERT_MEDIDAS = @"INSERT INTO medidas (data, temp, usuarios_id) VALUES (@data, @temp, @usuarios_id)";
         private static string _INSERT_USUARIO = @"INSERT INTO usuarios (nome) VALUES (@nome)";

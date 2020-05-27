@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Server {
@@ -19,8 +18,9 @@ namespace Server {
         private void HandlePost(HttpListenerContext context) {
             string body = new StreamReader(context.Request.InputStream).ReadToEnd();
             Console.WriteLine("[POST] Recebeu: " + body);
+            
             try {
-                DataBase.AddMessage(Message.ToMessage(body));
+                MedidasDB.AddMessage(Message.ToMessage(body));
                 SendResponse(context.Response, "ACK");
             }
             catch(Exception e) {
@@ -40,7 +40,7 @@ namespace Server {
             
             // Pega as medidas do usuario no DB
             int uid;
-            dynamic resp = (Int32.TryParse(reqPath, out uid)) ? DataBase.GetMedidas(uid) : null;
+            dynamic resp = (Int32.TryParse(reqPath, out uid)) ? MedidasDB.GetMedidas(uid) : null;
             
             // Serializa em JSON 
             if(resp != null) {
@@ -52,7 +52,15 @@ namespace Server {
             else
                 this.SendResponse(context.Response, resp, 400);
         }
-
+        
+        /**
+         * Cadastra um novo usuario
+         */
+        private void HandlePut(HttpListenerContext context) {
+            string body = new StreamReader(context.Request.InputStream).ReadToEnd();
+            Console.WriteLine("[PUT] Recebeu: " + body);
+        }
+        
         private void SendResponse(HttpListenerResponse response, string? resp, int status=200) {
             var buffer = System.Text.Encoding.UTF8.GetBytes(resp ?? $"Erro: {status}");
             response.StatusCode = status;
@@ -62,14 +70,15 @@ namespace Server {
             output.Close();
         }
 
-        private async Task ProccessRequest(Task<HttpListenerContext> con ) {
+        private async Task ProccessRequestAsync(Task<HttpListenerContext> con ) {
             var context = await con; // espera o resultado do request e entao o processa 
             Console.WriteLine($"Recebeu um request: {context.Request.HttpMethod}");
             if(context.Request.HttpMethod == HttpMethod.Get.Method) this.HandleGet(context);
             else if(context.Request.HttpMethod == HttpMethod.Post.Method) this.HandlePost(context);
+            else if(context.Request.HttpMethod == HttpMethod.Put.Method) this.HandlePut(context);
         }
 
-        public async Task Run() {
+        public async Task Run() { 
             var httpListener = new HttpListener();
             httpListener.Prefixes.Add(_host);
             httpListener.Start();
@@ -78,10 +87,10 @@ namespace Server {
             // mas nao ficará bloqueado no mesmo 
             // assim consegue processar varios de uma vez. 
             while(httpListener.IsListening) 
-                await this.ProccessRequest(httpListener.GetContextAsync());
+                await this.ProccessRequestAsync(httpListener.GetContextAsync());
             httpListener.Close();
         }
-
+        
         public static async Task Main(string[] args) {
             try {
                 await new HTTPServer().Run();
@@ -90,5 +99,6 @@ namespace Server {
                 Console.WriteLine(e);
             }
         }
+        
     }
 }
