@@ -7,6 +7,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Math;
 
 namespace Server {
     class HTTPServer {
@@ -20,7 +21,10 @@ namespace Server {
             Console.WriteLine("[POST] Recebeu: " + body);
             
             try {
-                MedidasDB.AddMessage(Message.ToMessage(body));
+                var msg = Message.ToMessage(body);
+                Console.WriteLine(msg.ToString());
+                MedidasDB.AddMessage(msg);
+                // MedidasDB.AddMessage(Message.ToMessage(body));
                 SendResponse(context.Response, "ACK");
             }
             catch(Exception e) {

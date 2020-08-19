@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `ControleSementes`.`medidas` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `temp` FLOAT NULL,
   `data` DATETIME NULL,
+  `humidity` INT NOT NULL, 
   `usuarios_id` INT NOT NULL,
   PRIMARY KEY (`id`, `usuarios_id`),
   INDEX `fk_medidas_usuarios_idx` (`usuarios_id` ASC),

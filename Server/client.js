@@ -3,7 +3,7 @@ const http = require('http');
 const _host = "127.0.0.1";
 const _port = 42069;
 // const _data = '{"4/2020", "temp" : 32, "uid" : 1}'; // com erro
-const _data = '{"date" : "21:39:45 5/4/2020", "temp" : 32, "uid" : 1}';
+const _data = '{"date" : "21:39:45 18/8/2020", "temp" : 32, "umidade": 66, "uid" : 1}';
 var _uid = 1; 
 
 const getOptions = {
@@ -34,14 +34,14 @@ const putOptions = {
     }
 };
 
-var req_put  = http.request(putOptions, res => {
-    console.log('StatusCode :', res.statusCode);
-    res.setEncoding('utf8');
-    res.on('data', d => console.log(d));
-});
-
-req_put.write(_put);
-req_put.end();
+// var req_put  = http.request(putOptions, res => {
+//     console.log('StatusCode :', res.statusCode);
+//     res.setEncoding('utf8');
+//     res.on('data', d => console.log(d));
+// });
+//
+// req_put.write(_put);
+// req_put.end();
 
 // for (let i = 0; i < 500; i++) {
 //     _uid = (i%2)+1;
@@ -53,11 +53,11 @@ req_put.end();
 //     req_get.end();
 // }
 
-// var req_post = http.request(postOptions, res => {
-//     console.log('StatusCode: ', res.statusCode);
-//     res.setEncoding('utf8');
-//     res.on('data', chunk => console.log(chunk));
-// });
+var req_post = http.request(postOptions, res => {
+    console.log('StatusCode: ', res.statusCode);
+    res.setEncoding('utf8');
+    res.on('data', chunk => console.log(chunk));
+});
 
-// req_post.write(_data);
-// req_post.end();
+req_post.write(_data);
+req_post.end();
